@@ -58,7 +58,7 @@ async def anony_boot():
 
     LOGGER.info(f"@{ROCKY.username} Started.")
 
-    await idle()
+    await asyncio.Event().wait()
 
 
 app = Flask(__name__)
