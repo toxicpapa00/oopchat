@@ -24,17 +24,18 @@ async def anony_boot():
         asyncio.create_task(restart_bots())
         asyncio.create_task(restart_idchatbots())
         await load_clone_owners()
+
         if config.STRING1:
             try:
                 await userbot.start()
                 try:
-                    await ROCKY.send_message(int(OWNER_ID), f"**Id-Chatbot Also Started✅**")
-                except Exception as ex:
-                    LOGGER.info(f"@{ROCKY.username} Started, please start the bot from owner id.")
-    
+                    await ROCKY.send_message(int(OWNER_ID), "**Id-Chatbot Also Started✅**")
+                except:
+                    LOGGER.info("Id chatbot started but message failed.")
             except Exception as ex:
-                print(f"Error in starting id-chatbot :- {ex}")
+                print(f"Error in id-chatbot :- {ex}")
                 pass
+
     except Exception as ex:
         LOGGER.error(ex)
 
@@ -42,35 +43,21 @@ async def anony_boot():
         importlib.import_module("ROCKY.modules." + all_module)
         LOGGER.info(f"Successfully imported : {all_module}")
 
-    
     try:
         await ROCKY.set_bot_commands(
             commands=[
                 BotCommand("start", "Start the bot"),
-                BotCommand("help", "Get the help menu"),
-                BotCommand("clone", "Make your own chatbot"),
-                BotCommand("idclone", "Make your id-chatbot"),
-                BotCommand("cloned", "Get List of all cloned bot"),
-                BotCommand("ping", "Check if the bot is alive or dead"),
-                BotCommand("lang", "Select bot reply language"),
-                BotCommand("chatlang", "Get current using lang for chat"),
-                BotCommand("resetlang", "Reset to default bot reply lang"),
-                BotCommand("id", "Get users user_id"),
-                BotCommand("stats", "Check bot stats"),
-                BotCommand("gcast", "Broadcast any message to groups/users"),
-                BotCommand("chatbot", "Enable or disable chatbot"),
-                BotCommand("status", "Check chatbot enable or disable in chat"),
-                BotCommand("shayri", "Get random shayri for love"),
-                BotCommand("ask", "Ask anything from chatgpt"),
-                BotCommand("repo", "Get chatbot source code"),
+                BotCommand("help", "Bot help menu"),
+                BotCommand("clone", "Make chatbot"),
+                BotCommand("idclone", "Make id chatbot"),
             ]
         )
         LOGGER.info("Bot commands set successfully.")
     except Exception as ex:
         LOGGER.error(f"Failed to set bot commands: {ex}")
-    
+
     LOGGER.info(f"@{ROCKY.username} Started.")
-    
+
     await idle()
 
 
@@ -82,8 +69,16 @@ def home():
 def run_flask():
     app.run(host="0.0.0.0", port=8000)
 
+
 if __name__ == "__main__":
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.start()
-    asyncio.get_event_loop().run_until_complete(anony_boot())
-    LOGGER.info("Stopping ROCKY Bot...")
+
+    # ✔ FIXED — Event loop create first
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    try:
+        loop.run_until_complete(anony_boot())
+    finally:
+        loop.close()
